@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         flexFlow: "column nowrap",
         justifyContent: "center",
-        alignContent: "center"
+        alignItems: "center"
     },
     title: {
       color: "gray",
@@ -31,7 +31,8 @@ const useStyles = makeStyles((theme) => ({
         width: "80%"
     },
     moreButton:{
-
+        marginTop: 40,
+        marginBottom: 20
     }
   }));
 
@@ -42,6 +43,11 @@ const HomeComponent  = props => {
     const [charactersList, setCharactersList] = useState([])
 
     useEffect(() =>{
+        retrieveCharacters()
+    }, [])
+
+    const retrieveCharacters = _ => {
+        setLoading(true)
         axios.get(`${baseUrl}characters?limit=${limit}&offset=0`)
         .then(res => {
             setCharactersList(res.data)
@@ -49,7 +55,12 @@ const HomeComponent  = props => {
             console.log(res.data)
         })
         .catch(err => console.log(err))
-    }, [])
+    }
+
+    const updateCharacters = _ => {
+        setLimit(limit+6)
+        retrieveCharacters()
+    }
 
     return(
         <div className={classes.root}>
@@ -58,21 +69,29 @@ const HomeComponent  = props => {
             </div>
             <div className={classes.sort}>
                 <ButtonGroup color="primary" aria-label="outlined primary button group">
-                    <Button>One</Button>
-                    <Button>Two</Button>
-                    <Button>Three</Button>
+                    <Button>Name</Button>
+                    <Button>Birthday</Button>
+                    <Button>Status</Button>
                 </ButtonGroup>
             </div>
             <div className={classes.cards}>
                 {
                     (loading) ? <h2>Loading...</h2> :
                     charactersList.map((e, i) => ( 
-                        <CardComponent key={i} img={e.img} name={e.name} occupation={e.occupation} status={e.status} birthday={e.birthday}/>
+                        <CardComponent 
+                            key={i} 
+                            img={e.img} 
+                            name={e.name} 
+                            occupation={e.occupation} 
+                            status={e.status} 
+                            birthday={e.birthday}
+                            portrayer={e.portrayed}
+                        />
                     ))
                 }
             </div>
             <div className={classes.moreButton}>
-                <Button variant="contained" color="primary">
+                <Button variant="contained" color="primary" onClick={e => updateCharacters() }>
                     Show More
                 </Button>
             </div>
